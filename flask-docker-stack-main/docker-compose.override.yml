@@ -1,0 +1,24 @@
+version : '3'
+#This override is for local testing - DO NOT PUT THIS FILE ON PROD SERVER
+    
+services:
+    phpmyadmin:
+        ports:
+          - "80:80"
+        environment:
+          PMA_ABSOLUTE_URI: http://127.0.0.1  #http://localhost for phpmyadmin
+
+    web:
+        build:  ./web
+        container_name: web
+        ports:
+          - "5000:5000"
+        environment:
+          USECAS: False
+          PYTHONUNBUFFERED: 1
+        volumes:
+          - ./web/app:/var/www/apache-flask/app:rw
+        command: bash -c  "python3 /var/www/apache-flask/app/app.py"
+    ssl:
+      deploy:
+        replicas: 0 #turn off ssl

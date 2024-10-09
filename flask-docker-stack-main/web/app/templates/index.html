@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+<div class="intro">
+    <h1 class="h1">Intro</h1>
+    <div class="intro-para">
+        <p>
+            Our Weather API is your go-to tool for accessing comprehensive weather data across various levels. Whether you need information by zip code, place name, or specific latitude and longitude coordinates, our API delivers accurate and up-to-date weather conditions. Currently, the API focuses on providing data from weather stations within a defined polygon region in the United States.
+        </p>
+        <p>
+            Key Features:
+            <ul>
+                <li>By Zip Code: Fetch localized weather data quickly and efficiently.</li>
+                <li>By Place Name: Retrieve weather conditions for cities and towns.</li>
+                <li>By Latitude and Longitude: Get precise weather information for specific coordinates.</li>
+            </ul>
+        </p>
+    </div>
+</div>
+
+<div class="polygon">
+    <h1 class="h1">Polygon</h1>
+    <iframe src="{{ url_for('static', filename='polygon.html') }}" frameborder="0" style="border:0; width:100%; height:70%;"></iframe>
+</div>
+
+<div class="start">
+    <a href="/getstarted">
+        <button type="button" class="btn">Get Started</button>
+    </a>
+</div>
+
+{% endblock %}

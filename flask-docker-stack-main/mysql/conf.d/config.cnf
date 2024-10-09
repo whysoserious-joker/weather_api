@@ -1,0 +1,4 @@
+[mysqld]
+log_bin_trust_function_creators = 1
+bind-address	            = 0.0.0.0
+log_error_verbosity=1

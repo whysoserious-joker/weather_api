@@ -1,0 +1,52 @@
+version : '3'
+volumes:
+    confs:
+    certs:
+    letsencrypt:
+    
+services:
+    db:
+      build: ./mysql
+      container_name: mysql
+      ports:
+        - "3306:3306"
+      volumes:
+        - ./data/mysql:/var/lib/mysql
+        - ./mysql/conf.d:/etc/mysql/conf.d
+      environment:
+        - MYSQL_ROOT_PASSWORD=clark.13676
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:5.2.1
+        container_name: phpmyadmin
+        environment:
+          PMA_HOST: db
+          PMA_PORT: 3306
+          PMA_ARBITRARY: 0
+          PMA_ABSOLUTE_URI: https://apps.clarksonmsda.org/my_phpmyadmin
+          UPLOAD_LIMIT: 20M
+        restart: always
+        volumes:
+        - ./pma/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+    web:
+        build:  ./web
+        container_name: web
+        environment:
+          USECAS: True
+        volumes:
+          - ./web/app:/var/www/apache-flask/app:rw
+        command: bash -c  "/usr/sbin/apache2ctl -D FOREGROUND"
+    ssl:
+        restart: unless-stopped
+        image: jonasal/nginx-certbot:latest
+        container_name: ssl
+        ports:
+            - 80:80/tcp
+            - 443:443/tcp
+        links:
+            - web:web
+        environment:
+            CERTBOT_EMAIL: tconlon@clarkson.edu
+            DEBUG: 1
+        volumes:
+        - ./ssl/conf.d:/etc/nginx/user_conf.d:ro
+        - letsencrypt:/etc/letsencrypt
