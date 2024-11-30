@@ -464,6 +464,7 @@ Before we start loading the weather data I need to store/load the station detail
 There are many reasons why we need to do this , lets state a dew.
 
 - create a primary key for each station
+    - how? using factorize method in python which creates unique value for values in a given series.
 
 - Lets say you need to extract weather data for Postdam by its name or coordinates. We need to figure out which stations are near to Potsdam or the given coordinates.
 To do this, we need to calcualate the distance between the given coordinates and all the station coordinates and sort it in ascending order to get the nearest station. 
@@ -591,5 +592,106 @@ if __name__ == '__main__':
     ld.load_weather_data()
     print("Loading complete")
 ```
+
+
+## Flask API
+
+Sample endpoint 
+
+Based on a given lat , lon and n value it gives n nearest station details.
+
+/get_nearest_stations?key=123&lat=44.6592&lon=-74.9681&n=15
+
+
+```python
+@app.route("/get_nearest_stations",methods=['GET','POST'])
+def get_nearest_stations():
+    res={}
+    key=request.args.get("key")
+    if key!='123':
+        res['code']=0
+        res['msg']='Invalid key'
+        return json.dumps(res,indent=4)
+    
+    lat=request.args.get("lat")
+    lon=request.args.get("lon")
+    n=request.args.get("n")
+    try:
+        latitude=float(lat)
+        longitude=float(lon)
+        n=int(n)
+    except:
+        res['code']=0
+        res['msg']='Invalid entry'
+        return json.dumps(res,indent=4)
+
+    get_zip_coords_sql=open('sql_scripts/get_nearest_stations.sql').read()
+    start_time=time.time()
+    cur.execute(get_zip_coords_sql,(latitude,latitude,
+                                 longitude,longitude,
+                                 latitude,latitude,
+                                 longitude,longitude,
+                                 n))
+    end_time=time.time()
+    
+
+    res['code']=1
+    res['msg']='ok'
+
+    output=[]
+    for row in cur:
+        print(row)
+        item={}
+        item['station_id']=str(row['station_id'])
+        item['station']=str(row['station'])
+        item['name']=str(row['name'])
+        item['country_code']=str(row['country_code'])
+        item['latitude']=str(row['latitude'])
+        item['longitude']=str(row['longitude'])
+        item['station_distance']=str(round(row['distance'],2))+" m"
+        output.append(item)
+
+    res['results']=output
+    res['num_results']=len(output)
+    res['sql_time']=round(end_time-start_time,2)
+    
+    res['req']='/get_nearest_stations'
+    return json.dumps(res,indent=4)
+```
+
+
+Other endpoints
+
+- get nearest station details in tabular format based on given lat and lon value 
+```/getTableData_nearest_stations?key=123&lat=44.6592&lon=-74.9681&n=2```
+
+- get hourly weather data by by given zipcode , date and hour
+```/getData_by_zip_by_date_by_hour?key=123&zipcode=13676&date=2022-01-01&hour=13```
+
+- get hourly weather data by given zipcode , date and for all hours 
+```getData_by_zip_by_date_all_hours?key=123&zipcode=13676&date=2022-01-01```
+
+- get hourly weather data by given zipcode , date and all hours (Tabular format)
+```/getTableData_by_zip_by_date_all_hours?key=123&zipcode=13676&date=2022-01-01```
+
+- get weather data by date and station id 
+```/getData_by_station_id_by_date?key=123&station_id=2473&date=2022-01-01```
+
+- get weather data by station id and date range 
+```/getData_by_station_id_by_daterange?key=123&station_id=2473&start_date=2022-01-01&end_date=2022-01-02```
+
+- get weather data by station id by daterange (Tabular format)
+```/getTableData_by_station_id_by_daterange?key=123&station_id=7&start_date=2010-01-01&end_date=2010-01-02```
+
+- get weather data by zipcode by date 
+```/getData_by_zip_by_date?key=123&zipcode=13676&date=2022-01-01```
+
+- get weather data by given placename and date
+```/getData_by_placename_by_date?key=123&place_name=potts&country_code=us&date=2022-01-01```
+
+- get weather data by given placename and date (Tabular format)
+```/getTableData_by_placename_by_date?key=123&place_name=potts&country_code=us&date=2022-01-01```
+
+
 
 

@@ -17,7 +17,7 @@ app_log = prebuilt_loggers.filesize_logger('logs/app.log')
 app = Flask(__name__,static_url_path='')
 application = app
 
-app.secret_key = 'xfdgbsbW$^%W%Hwe57hE56yw56h'
+app.secret_key = ''
 app.config['SESSION_TYPE'] = 'filesystem'
 
 sess = Session()
