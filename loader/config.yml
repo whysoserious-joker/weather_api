@@ -29,16 +29,16 @@ load:
           ]
         ]
 files_workspace:
-  host: files.clarksonmsda.org
-  username: kanthar@clarkson.edu
-  password: Clarkson.13676
+  host: hostname
+  username: username
+  password: password
   port: 2022
-  path: srv/sftpgo/data/users/kanthar@clarkson.edu/nws-hourly/csv
+  path: path_where_csv_files_are_located
 
 db:
-  username: 'clarkson24'
-  password: 'clark@2024'
-  hostname: 'apps.clarksonmsda.org'
+  username: username_for_mysql
+  password: password
+  hostname: hostname
   port: 3306
   database_name: 'weather_info'
 
