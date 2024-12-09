@@ -321,7 +321,7 @@ class loader:
         station_ids=pd.read_csv('stations.csv',dtype={'station': str})  
         station_ids=station_ids[['station_id','station']].drop_duplicates()  
 
-        for year in range(2014,2021):
+        for year in range(2014,2021): # change this as per your years you want to load.
             logger.debug(f"Working on year {year}")
             self.merge_files(str(year))
             logger.debug("joining with station index df to get index")
